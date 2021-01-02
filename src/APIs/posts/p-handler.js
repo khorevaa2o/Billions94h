@@ -5,7 +5,11 @@ import createHttpError from 'http-errors'
 //Create new Post
 const createPost = async (req, res, next) => {
     try {
-        userId = req.param.id
+        const postId = req.params.id
+
+        const post = await PostModel.findById(postId)
+        if
+
     } catch (error) {
         console.log(error)
         next(error)
