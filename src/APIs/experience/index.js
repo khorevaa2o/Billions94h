@@ -5,6 +5,7 @@ const experienceRouter = express.Router()
 
 experienceRouter.post('/:userId', experienceHandler.createExperience)
 
+experienceRouter.get('/:id/downloadCSV', experienceHandler.createCSV)
 experienceRouter.get('/', experienceHandler.getAllExperiences)
 
 experienceRouter.route('/:id')
