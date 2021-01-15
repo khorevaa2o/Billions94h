@@ -2,7 +2,32 @@ import ExperienceModel from './schema.js'
 import UserModel from '../users/schema.js'
 import q2m from 'query-to-mongo'
 import createHttpError from 'http-errors'
+import json2csv from 'json2csv'
+import { pipeline } from 'stream'
 
+
+// Create CSV for Experience
+const createCSV = async (req, res, next) => {
+    try {
+        res.setHeader("Content-Disposition", "attachment; filename=experience.csv") 
+
+        const id = req.params.id
+        const user = await UserModel.findById(id)
+        const exp =   ExperienceModel.findById(id)
+
+        const  source = exp
+        
+        const transform = new json2csv.Transform({ fields: ["company"] })
+        const destination = res
+
+        pipeline(source, transform, destination, err => {
+            if (err) next(err)
+        })
+    } catch (error) {
+        console.error(error)
+        next(error)
+    }
+}
 
 // Create new Experience
 const createExperience = async (req, res, next) => {
@@ -98,7 +123,8 @@ const experienceHandler = {
     getAllExperiences,
     getExpByID,
     updateExperience,
-    deleteExperience
+    deleteExperience,
+    createCSV
 }
 
 export default experienceHandler
