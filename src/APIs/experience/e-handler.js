@@ -4,42 +4,50 @@ import q2m from 'query-to-mongo'
 import createHttpError from 'http-errors'
 import json2csv from 'json2csv'
 import { pipeline } from 'stream'
-
+import mongoose from 'mongoose'
 
 // Create CSV for Experience
-const createCSV = async (req, res, next) => {
-    try {
-        res.setHeader("Content-Disposition", "attachment; filename=experience.csv") 
+// const createCSV = async (req, res, next) => {
+//     try {
+//         res.setHeader("Content-Disposition", "attachment; filename=experience.csv") 
 
-        const id = req.params.id
-        const user = await UserModel.findById(id)
-        const exp =   ExperienceModel.findById(id)
+//         const id = req.params.id
+//         const user = await UserModel.findById(id)
+//         const exp =   ExperienceModel.findById(id)
 
-        const  source = exp
+//         const  source = exp
         
-        const transform = new json2csv.Transform({ fields: ["company"] })
-        const destination = res
+//         const transform = new json2csv.Transform({ fields: ["company"] })
+//         const destination = res
 
-        pipeline(source, transform, destination, err => {
-            if (err) next(err)
-        })
-    } catch (error) {
-        console.error(error)
-        next(error)
-    }
-}
+//         pipeline(source, transform, destination, err => {
+//             if (err) next(err)
+//         })
+//     } catch (error) {
+//         console.error(error)
+//         next(error)
+//     }
+// }
 
 // Create new Experience
 const createExperience = async (req, res, next) => {
     try {
-        const userId = req.params.userId
+        const userName = req.params.userName
         
-        const user = await UserModel.findById(userId)
-        const newExp = new ExperienceModel(req.body)
-        newExp.userName = user.userName
-        await newExp.save()
-
-        res.status(201).send(newExp)
+        const experience = await ExperienceModel(req.body).save()
+        console.log(experience)
+        if(experience){
+            const newExp = {...experience.toObject()}
+            console.log(newExp)
+            const updatedUser = await UserModel.findOneAndUpdate(
+                userName,
+                { $push: { experiences: experience._id}},
+                { new: true }
+            )
+            res.status(201).send(updatedUser)
+        } else {
+            next(createHttpError(404, `Experience with id ${id} not found`))  
+        }
     } catch (error) {
         console.error(error)
         next(error)
@@ -52,7 +60,7 @@ const getAllExperiences = async (req, res, next) => {
         const mongoQuery = q2m(req.query)
         console.log(mongoQuery)
         const total = await ExperienceModel.countDocuments(mongoQuery.criteria)
-        const exp = await ExperienceModel.find(mongoQuery.criteria)
+        const exp = await ExperienceModel.find({ userName: req.params.userName})
         .limit(mongoQuery.options.limit)
         .skip(mongoQuery.options.skip)
         .sort(mongoQuery.options.sort)
@@ -124,7 +132,7 @@ const experienceHandler = {
     getExpByID,
     updateExperience,
     deleteExperience,
-    createCSV
+    // createCSV
 }
 
 export default experienceHandler

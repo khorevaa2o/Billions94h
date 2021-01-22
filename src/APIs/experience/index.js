@@ -1,16 +1,16 @@
-import express from 'express';
-import experienceHandler from './e-handler.js';
+// import express from 'express';
+// import experienceHandler from './e-handler.js';
 
-const experienceRouter = express.Router()
+// const experienceRouter = express.Router()
 
-experienceRouter.post('/:userId', experienceHandler.createExperience)
+// experienceRouter.post('/:userId', experienceHandler.createExperience)
 
-experienceRouter.get('/:id/downloadCSV', experienceHandler.createCSV)
-experienceRouter.get('/', experienceHandler.getAllExperiences)
+// experienceRouter.get('/:id/downloadCSV', experienceHandler.createCSV)
+// experienceRouter.get('/', experienceHandler.getAllExperiences)
 
-experienceRouter.route('/:id')
-.get(experienceHandler.getExpByID)
-.put(experienceHandler.updateExperience)
-.delete(experienceHandler.deleteExperience)
+// experienceRouter.route('/:id')
+// .get(experienceHandler.getExpByID)
+// .put(experienceHandler.updateExperience)
+// .delete(experienceHandler.deleteExperience)
 
-export default experienceRouter
+// export default experienceRouter

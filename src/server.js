@@ -5,7 +5,7 @@ import { badRequest, notFound, unAuthorized, genericError} from './error-handler
 import mongoose from 'mongoose';
 import usersRouter from './APIs/users/index.js';
 import postRouter from './APIs/posts/index.js';
-import experienceRouter from './APIs/experience/index.js';
+// import experienceRouter from './APIs/experience/index.js';
 
 
 const server = express();
@@ -17,7 +17,7 @@ server.use(express.json())
 // Routes
 server.use('/users', usersRouter)
 server.use('/posts', postRouter)
-server.use('/experience', experienceRouter)
+// server.use('/experience', experienceRouter)
 
 
 

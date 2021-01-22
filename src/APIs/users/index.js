@@ -1,5 +1,6 @@
 import express from 'express';
-import usersHandler from './u-handler.js'
+import usersHandler from './u-handler.js';
+import experienceHandler from '../experience/e-handler.js';
 import { usersValidator } from './validator.js';
 import UserModel from './schema.js'
 import { getPDFReadableStream } from '../pdf/pdfTools.js';
@@ -51,5 +52,15 @@ usersRouter.route('/:id')
 .get(usersHandler.getUserById)
 .put(usersHandler.updateUser)
 .delete(usersHandler.deleteUser)
+
+
+usersRouter.get('/:userName/experiences', experienceHandler.getAllExperiences)
+usersRouter.post('/:userName/experiences', experienceHandler.createExperience)
+
+usersRouter.route('/:userName/experiences/:expId')
+.get(experienceHandler.getExpByID)
+.put(experienceHandler.updateExperience)
+.delete(experienceHandler.deleteExperience)
+
 
 export default usersRouter
