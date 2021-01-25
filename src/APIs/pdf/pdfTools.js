@@ -1,5 +1,4 @@
 import PdfPrinter from "pdfmake";
-import btoa from "btoa";
 import fetch from "node-fetch";
 import { extname } from "path";
 
@@ -23,16 +22,13 @@ const fetchIamgeBuffer = async (image) => {
 };
 
 export const getPDFReadableStream = async (data) => {
+
   let imagePath = {};
   if (data.image) {
     let imageBufferArray = await fetchIamgeBuffer(data.image);
-    console.log(imageBufferArray);
 
-    const base64String = btoa(
-      String.fromCharCode(...new Uint8Array(imageBufferArray))
-    );
-    console.log(base64String);
-
+    const base64String = Buffer.from(imageBufferArray).toString("base64")
+  
     const imageUrlPath = data.image.split("/");
     const fileName = imageUrlPath[imageUrlPath.length - 1];
     const extension = extname(fileName);

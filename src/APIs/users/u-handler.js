@@ -58,6 +58,7 @@ const getUserById = async (req, res, next) => {
     try {
         const id = req.params.id
         const user = await UserModel.findById(id)
+        .populate({ path: 'experiences'})
         if (user){
             res.send(user)
         } else {

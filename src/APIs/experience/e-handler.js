@@ -34,10 +34,13 @@ const createExperience = async (req, res, next) => {
     try {
         const userName = req.params.userName
         
-        const experience = await ExperienceModel(req.body).save()
+        const experience = await ExperienceModel(req.body)
+        experience.userName = userName
+        await experience.save()
+
         console.log(experience)
         if(experience){
-            const newExp = {...experience.toObject()}
+            const newExp = {...experience.toObject(), }
             console.log(newExp)
             const updatedUser = await UserModel.findOneAndUpdate(
                 userName,
@@ -64,6 +67,7 @@ const getAllExperiences = async (req, res, next) => {
         .limit(mongoQuery.options.limit)
         .skip(mongoQuery.options.skip)
         .sort(mongoQuery.options.sort)
+        console.log('============================>', exp)
         
 
         res.send({
