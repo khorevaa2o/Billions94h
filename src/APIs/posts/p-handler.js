@@ -2,14 +2,16 @@ import PostModel from './schema.js'
 import UserModel from '../users/schema.js'
 import createHttpError from 'http-errors'
 import mongoose from 'mongoose'
+import q2m from 'query-to-mongo'
 
 //Create new Post
 const createPost = async (req, res, next) => {
     try {
-        const userId = req.params.userId
-        console.log('=============================>', userId)
+        const userName = req.params.userName
+        const user = await UserModel.findOne({ userName: userName })
+        console.log('=============================>', user._id)
         const newPost = new PostModel(req.body)
-        newPost.user = userId
+        newPost.user = user._id
         await newPost.save()
         if (newPost){
             res.status(201).send(newPost)
@@ -25,9 +27,20 @@ const createPost = async (req, res, next) => {
 // Get all Posts
 const getAllPosts = async (req, res, next) => {
     try {
-        const posts = await PostModel.find(req.body)
+        const mongoQuery = q2m(req.query)
+        const total = await PostModel.countDocuments(mongoQuery.criteria)
+        const posts = await PostModel.find(mongoQuery.criteria)
+        .limit(mongoQuery.options.limit)
+        .skip(mongoQuery.options.skip)
+        .sort(mongoQuery.options.sort)
         .populate({ path: 'user'})
-        res.send(posts)
+        .populate({ path: 'comments'})
+        res.send({
+            links: mongoQuery.links('/posts', total),
+            pageTotal: Math.ceil(total / mongoQuery.options.limit),
+            total,
+            posts
+        })
     } catch (error) {
         console.log(error)
         next(error)

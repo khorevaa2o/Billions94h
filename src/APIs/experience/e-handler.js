@@ -5,36 +5,42 @@ import createHttpError from 'http-errors'
 import json2csv from 'json2csv'
 import { pipeline } from 'stream'
 import mongoose from 'mongoose'
+import fs from 'fs-extra'
+
+const { createReadStream } = fs
 
 // Create CSV for Experience
-// const createCSV = async (req, res, next) => {
-//     try {
-//         res.setHeader("Content-Disposition", "attachment; filename=experience.csv") 
+const createCSV = async (req, res, next) => {
+    try {
+        res.setHeader("Content-Disposition", "attachment; filename=experience.csv") 
 
-//         const id = req.params.id
-//         const user = await UserModel.findById(id)
-//         const exp =   ExperienceModel.findById(id)
+        const userName = req.params.userName
+        // const user = await UserModel.findById(id)
+        // user.userName = userName
+        const exp = await  ExperienceModel.find()
 
-//         const  source = exp
+        console.log('============================>', exp)
+
+        const  source = createReadStream(exp.toString())
         
-//         const transform = new json2csv.Transform({ fields: ["company"] })
-//         const destination = res
+        const transform = new json2csv.Transform({ fields: ["area", "company", "role"] })
+        const destination = res
 
-//         pipeline(source, transform, destination, err => {
-//             if (err) next(err)
-//         })
-//     } catch (error) {
-//         console.error(error)
-//         next(error)
-//     }
-// }
+        pipeline(source, transform, destination, err => {
+            if (err) next(err)
+        })
+    } catch (error) {
+        console.error(error)
+        next(error)
+    }
+}
 
 // Create new Experience
 const createExperience = async (req, res, next) => {
     try {
         const userName = req.params.userName
         
-        const experience = await ExperienceModel(req.body)
+        const experience = new ExperienceModel(req.body)
         experience.userName = userName
         await experience.save()
 
@@ -43,7 +49,7 @@ const createExperience = async (req, res, next) => {
             const newExp = {...experience.toObject(), }
             console.log(newExp)
             const updatedUser = await UserModel.findOneAndUpdate(
-                userName,
+                { userName: userName },
                 { $push: { experiences: experience._id}},
                 { new: true }
             )
@@ -85,9 +91,11 @@ const getAllExperiences = async (req, res, next) => {
 // Get Experience by ID
 const getExpByID = async (req, res, next) => {
     try {
-        const id = req.params.id
-        const exp = await ExperienceModel.findById(id)
-        if (exp){
+        const expId = req.params.expId
+        const userName = req.params.userName
+        const exp = await ExperienceModel.findById(expId)
+        const check = exp.userName === userName
+        if (exp && check){
             res.send(exp)
         } else {
             next(createHttpError(404, `Experience with id ${id} not found`))
@@ -101,8 +109,13 @@ const getExpByID = async (req, res, next) => {
 // Update or Modify Experience by ID
 const updateExperience = async (req, res, next) => {
     try {
-        const id = req.params.id
-        const exp = await ExperienceModel.findByIdAndUpdate(id, req.body, {new: true})
+    
+        const expId = req.params.expId
+        const exp = await ExperienceModel.findOneAndUpdate(
+            expId,
+            req.body,
+            {new: true}
+            )
         if (exp){
             res.status(203).send(exp)
         } else {
@@ -117,8 +130,13 @@ const updateExperience = async (req, res, next) => {
 // Delete Experience by ID
 const deleteExperience = async (req, res, next) => {
     try {
-        const id = req.params.id
-        const deletedEXp = await ExperienceModel.findByIdAndDelete(id)
+        const expId = req.params.expId
+        const userName = req.params.userName
+        const user = await UserModel.findOneAndUpdate(
+            {userName: userName},
+            { $pull: {experiences: expId }}
+        )
+        const deletedEXp = await ExperienceModel.findByIdAndDelete(expId)
         if (deletedEXp){
             res.status(204).send()
         } else {
@@ -136,7 +154,7 @@ const experienceHandler = {
     getExpByID,
     updateExperience,
     deleteExperience,
-    // createCSV
+    createCSV
 }
 
 export default experienceHandler
