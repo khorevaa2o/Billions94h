@@ -56,6 +56,7 @@ usersRouter.route('/:id')
 
 usersRouter.get('/:userName/experiences', experienceHandler.getAllExperiences)
 usersRouter.post('/:userName/experiences', experienceHandler.createExperience)
+usersRouter.get('/:userName/experiences/CSV', experienceHandler.createCSV)
 
 usersRouter.route('/:userName/experiences/:expId')
 .get(experienceHandler.getExpByID)
