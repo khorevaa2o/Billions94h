@@ -2,38 +2,37 @@ import ExperienceModel from './schema.js'
 import UserModel from '../users/schema.js'
 import q2m from 'query-to-mongo'
 import createHttpError from 'http-errors'
-import json2csv from 'json2csv'
-import { pipeline } from 'stream'
 import mongoose from 'mongoose'
-import fs from 'fs-extra'
 
-const { createReadStream } = fs
+import {parseCSV} from '../../lib/CSV/index.js'
 
-// Create CSV for Experience
+
+//Create CSV for Experience
 const createCSV = async (req, res, next) => {
     try {
-        res.setHeader("Content-Disposition", "attachment; filename=experience.csv") 
-
-        const userName = req.params.userName
-        // const user = await UserModel.findById(id)
-        // user.userName = userName
-        const exp = await  ExperienceModel.find()
-
-        console.log('============================>', exp)
-
-        const  source = createReadStream(exp.toString())
         
-        const transform = new json2csv.Transform({ fields: ["area", "company", "role"] })
-        const destination = res
-
-        pipeline(source, transform, destination, err => {
-            if (err) next(err)
-        })
+        const username = req.params.userName
+        // console.log(userName)
+        const dataToCsv = await ExperienceModel.find({userName: username})
+        // console.log(dataToCsv)
+        const fieldsAsJSON = JSON.stringify(dataToCsv)
+        console.log(fieldsAsJSON)
+        
+        const fields = ["role", "company", "startDate", "endDate", "description", "area"]
+       
+        const csvBuffer = await parseCSV(fieldsAsJSON, fields)
+        console.log("==========>", csvBuffer)
+        
+        res.setHeader("Content-Type", "text/csv")
+        res.setHeader("Content-Disposition", "attachment; filename=experience.csv") 
+        res.send(csvBuffer);
     } catch (error) {
         console.error(error)
         next(error)
     }
 }
+
+
 
 // Create new Experience
 const createExperience = async (req, res, next) => {
