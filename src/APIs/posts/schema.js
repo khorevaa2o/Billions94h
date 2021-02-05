@@ -6,8 +6,9 @@ const PostSchema = new Schema(
     {
         image: { type: String },
         text: { type: String, required: true },
-        userName: { type: String, required: true },
-        user: { type: Schema.Types.ObjectId, ref:'User' }
+        userName: { type: String },
+        user: { type: Schema.Types.ObjectId, ref:'User' },
+        comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }]
     },
     {
         timestamps: true
