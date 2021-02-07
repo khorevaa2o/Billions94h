@@ -2,8 +2,6 @@ import ExperienceModel from './schema.js'
 import UserModel from '../users/schema.js'
 import q2m from 'query-to-mongo'
 import createHttpError from 'http-errors'
-import mongoose from 'mongoose'
-
 import {parseCSV} from '../../lib/CSV/index.js'
 
 
