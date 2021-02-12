@@ -14,6 +14,19 @@ const createUser = async (req, res, next) => {
   }
 };
 
+// Post new Picture or Change existing one
+const postPicture = async (req, res, next) => {
+    try {
+        const id = req.params.id
+        const imgPath = req.file.path
+        const user = await UserModel.findByIdAndUpdate(id, { $set: { image: imgPath }})
+        res.status(203).send(user)
+    } catch (error) {
+        console.log(error)
+        next(error);
+    }
+}
+
 // Get all Users
 const getAllUsers = async (req, res, next) => {
     try {
@@ -25,6 +38,7 @@ const getAllUsers = async (req, res, next) => {
         .limit(mongoQuery.options.limit)
         .skip(mongoQuery.options.skip)
         .sort(mongoQuery.options.sort)
+        .populate({ path: 'experiences'})
 
         res.send({
             links: mongoQuery.links('/users', total),
@@ -44,6 +58,7 @@ const getUserById = async (req, res, next) => {
     try {
         const id = req.params.id
         const user = await UserModel.findById(id)
+        .populate({ path: 'experiences'})
         if (user){
             res.send(user)
         } else {
@@ -88,10 +103,12 @@ const deleteUser = async (req, res, next) => {
 
 const usersHandler = {
     createUser,
+    postPicture,
     getAllUsers,
     getUserById,
     updateUser,
     deleteUser
+
 };
 
 export default usersHandler;
