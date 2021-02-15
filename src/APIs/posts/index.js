@@ -16,7 +16,9 @@ postRouter.route('/:id')
 postRouter.post('/:id/comments', commentsHandler.createComment)
 postRouter.get('/:id/comments', commentsHandler.getAllComments)
 
-postRouter.route('/:id/comments/commentId')
-
+postRouter.route('/:id/comments/:commentId')
+.put(commentsHandler.updateComment)
+.get(commentsHandler.getCommentById)
+.delete(commentsHandler.deleteComment)
 
 export default postRouter
