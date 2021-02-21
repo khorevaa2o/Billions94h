@@ -24,6 +24,37 @@ const createPost = async (req, res, next) => {
     }
 }
 
+const postLike = async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        console.log('==================>',id)
+        const post = await PostModel.findById(id);
+        if (post) {
+          const liked = await PostModel.findOne({
+            _id: id,
+            likes: new mongoose.Types.ObjectId(req.body.userId),
+          });
+          console.log('i am liked', liked)
+    
+          if (!liked) {
+            await PostModel.findByIdAndUpdate(id, {
+              $push: { likes: req.body.userId }
+            }, {new: true});
+          } else {
+            await PostModel.findByIdAndUpdate(id, {
+              $pull: { likes: req.body.userId },
+            });
+          }
+        } else {
+          next(createHttpError(404, `post with this id ${id} not found`));
+        }
+          await post.save()
+        res.status(201).send(post);
+      } catch (error) {
+        next(error);
+      }
+}
+
 // Get all Posts
 const getAllPosts = async (req, res, next) => {
     try {
@@ -35,6 +66,7 @@ const getAllPosts = async (req, res, next) => {
         .sort(mongoQuery.options.sort)
         .populate({ path: 'user'})
         .populate({ path: 'comments'})
+
         res.send({
             links: mongoQuery.links('/posts', total),
             pageTotal: Math.ceil(total / mongoQuery.options.limit),
@@ -98,6 +130,7 @@ const deletePost = async (req, res, next) => {
 
 const postHandler = {
     createPost,
+    postLike,
     getAllPosts,
     getPostById,
     updatePost,

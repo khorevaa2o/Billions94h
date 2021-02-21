@@ -12,6 +12,9 @@ postRouter.route('/:id')
 .put(postHandler.updatePost)
 .delete(postHandler.deletePost)
 
+/********************************************** Like Crud Section **********************************/
+postRouter.put('/:id/likes', postHandler.postLike)
+
 /********************************** Comments Crud Section  ************************************/
 postRouter.post('/:id/comments', commentsHandler.createComment)
 postRouter.get('/:id/comments', commentsHandler.getAllComments)
@@ -20,5 +23,7 @@ postRouter.route('/:id/comments/:commentId')
 .put(commentsHandler.updateComment)
 .get(commentsHandler.getCommentById)
 .delete(commentsHandler.deleteComment)
+
+
 
 export default postRouter
