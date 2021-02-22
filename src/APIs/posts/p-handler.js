@@ -24,11 +24,25 @@ const createPost = async (req, res, next) => {
     }
 }
 
+// Post new Picture or Change existing one
+const postPicture = async (req, res, next) => {
+    try {
+        const id = req.params.id
+        const imgPath = req.file.path
+        const user = await PostModel.findByIdAndUpdate(id, { $set: { image: imgPath }})
+        res.status(203).send(user)
+    } catch (error) {
+        console.log(error)
+        next(error);
+    }
+}
+
+// Post Likes
 const postLike = async (req, res, next) => {
     try {
         const id = req.params.id;
         console.log('==================>',id)
-        const post = await PostModel.findById(id);
+        let post = await PostModel.findById(id);
         if (post) {
           const liked = await PostModel.findOne({
             _id: id,
@@ -37,18 +51,18 @@ const postLike = async (req, res, next) => {
           console.log('i am liked', liked)
     
           if (!liked) {
-            await PostModel.findByIdAndUpdate(id, {
+           post =  await PostModel.findByIdAndUpdate(id, {
               $push: { likes: req.body.userId }
             }, {new: true});
           } else {
-            await PostModel.findByIdAndUpdate(id, {
+           post  =  await PostModel.findByIdAndUpdate(id, {
               $pull: { likes: req.body.userId },
-            });
+            },{new:true});
           }
         } else {
           next(createHttpError(404, `post with this id ${id} not found`));
         }
-          await post.save()
+          
         res.status(201).send(post);
       } catch (error) {
         next(error);
@@ -130,6 +144,7 @@ const deletePost = async (req, res, next) => {
 
 const postHandler = {
     createPost,
+    postPicture,
     postLike,
     getAllPosts,
     getPostById,

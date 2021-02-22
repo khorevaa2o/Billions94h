@@ -1,9 +1,23 @@
 import express from 'express';
 import postHandler from './p-handler.js'
 import commentsHandler from '../comments/c-handler.js';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import { v2 as cloudinary } from 'cloudinary'
+import multer from 'multer'
 
 const postRouter = express.Router()
 
+// IMAGE CLOUD STORAGE
+const cloudinaryStorage = new CloudinaryStorage({
+    cloudinary, // CREDENTIALS,
+    params: {
+      folder: "linkedIN-BE",
+    },
+  });
+
+// Post image
+postRouter.post('/:id/upload', multer({ storage: cloudinaryStorage}).single('image'), postHandler.postPicture)  
+ 
 postRouter.post('/:userName', postHandler.createPost)
 postRouter.get('/', postHandler.getAllPosts)
 
