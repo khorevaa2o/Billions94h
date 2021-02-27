@@ -95,7 +95,7 @@ const getExpByID = async (req, res, next) => {
         if (exp && check){
             res.send(exp)
         } else {
-            next(createHttpError(404, `Experience with id ${id} not found`))
+            next(createHttpError(404, `Experience with id ${expId} not found`))
         }
     } catch (error) {
         console.error(error)
