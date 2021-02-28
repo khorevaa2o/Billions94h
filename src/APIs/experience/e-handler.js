@@ -108,13 +108,13 @@ const updateExperience = async (req, res, next) => {
     try {
     
         const expId = req.params.expId
-        const exp = await ExperienceModel.findOneAndUpdate(
+        const exp = await ExperienceModel.findByIdAndUpdate(
             expId,
             req.body,
             {new: true}
             )
         if (exp){
-            res.status(203).send(exp)
+            res.status(200).send(exp)
         } else {
             next(createHttpError(404, `Experience with id ${id} not found`))
         }
