@@ -145,13 +145,26 @@ const deleteExperience = async (req, res, next) => {
     }
 }
 
+// Post new Picture or Change existing one
+const postImage = async (req, res, next) => {
+    try {
+        let id = req.params.expId
+        let imgPath = req.file.path
+        let experience = await ExperienceModel.findByIdAndUpdate(id, {$set: {image: imgPath}}, {new: true})
+        res.status(203).send(experience)
+    } catch (error) {
+        next(error)
+    }
+}
+
 const experienceHandler = {
     createExperience,
     getAllExperiences,
     getExpByID,
     updateExperience,
     deleteExperience,
-    createCSV
+    createCSV,
+    postImage
 }
 
 export default experienceHandler
