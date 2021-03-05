@@ -95,7 +95,7 @@ const getExpByID = async (req, res, next) => {
         if (exp && check){
             res.send(exp)
         } else {
-            next(createHttpError(404, `Experience with id ${id} not found`))
+            next(createHttpError(404, `Experience with id ${expId} not found`))
         }
     } catch (error) {
         console.error(error)
@@ -108,13 +108,13 @@ const updateExperience = async (req, res, next) => {
     try {
     
         const expId = req.params.expId
-        const exp = await ExperienceModel.findOneAndUpdate(
+        const exp = await ExperienceModel.findByIdAndUpdate(
             expId,
             req.body,
             {new: true}
             )
         if (exp){
-            res.status(203).send(exp)
+            res.status(200).send(exp)
         } else {
             next(createHttpError(404, `Experience with id ${id} not found`))
         }
@@ -145,13 +145,26 @@ const deleteExperience = async (req, res, next) => {
     }
 }
 
+// Post new Picture or Change existing one
+const postImage = async (req, res, next) => {
+    try {
+        let id = req.params.expId
+        let imgPath = req.file.path
+        let experience = await ExperienceModel.findByIdAndUpdate(id, {$set: {image: imgPath}}, {new: true})
+        res.status(203).send(experience)
+    } catch (error) {
+        next(error)
+    }
+}
+
 const experienceHandler = {
     createExperience,
     getAllExperiences,
     getExpByID,
     updateExperience,
     deleteExperience,
-    createCSV
+    createCSV,
+    postImage
 }
 
 export default experienceHandler

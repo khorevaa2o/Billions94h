@@ -24,6 +24,51 @@ const createPost = async (req, res, next) => {
     }
 }
 
+// Post new Picture or Change existing one
+const postPicture = async (req, res, next) => {
+    try {
+        const id = req.params.id
+        const imgPath = req.file.path
+        const user = await PostModel.findByIdAndUpdate(id, { $set: { image: imgPath } }, {new: true})
+        res.status(203).send(user)
+    } catch (error) {
+        console.log(error)
+        next(error);
+    }
+}
+
+// Post Likes
+const postLike = async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        console.log('==================>',id)
+        let post = await PostModel.findById(id);
+        if (post) {
+          const liked = await PostModel.findOne({
+            _id: id,
+            likes: new mongoose.Types.ObjectId(req.body.userId),
+          });
+          console.log('i am liked', liked)
+    
+          if (!liked) {
+           post =  await PostModel.findByIdAndUpdate(id, {
+              $push: { likes: req.body.userId }
+            }, {new: true});
+          } else {
+           post  =  await PostModel.findByIdAndUpdate(id, {
+              $pull: { likes: req.body.userId },
+            },{new:true});
+          }
+        } else {
+          next(createHttpError(404, `post with this id ${id} not found`));
+        }
+          
+        res.status(201).send(post);
+      } catch (error) {
+        next(error);
+      }
+}
+
 // Get all Posts
 const getAllPosts = async (req, res, next) => {
     try {
@@ -35,6 +80,7 @@ const getAllPosts = async (req, res, next) => {
         .sort(mongoQuery.options.sort)
         .populate({ path: 'user'})
         .populate({ path: 'comments'})
+
         res.send({
             links: mongoQuery.links('/posts', total),
             pageTotal: Math.ceil(total / mongoQuery.options.limit),
@@ -98,6 +144,8 @@ const deletePost = async (req, res, next) => {
 
 const postHandler = {
     createPost,
+    postPicture,
+    postLike,
     getAllPosts,
     getPostById,
     updatePost,

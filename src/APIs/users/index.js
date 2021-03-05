@@ -56,14 +56,13 @@ usersRouter.route('/:id')
 
 /******************************************* Experience Crud Section  *****************************************/
 usersRouter.get('/:userName/experiences/CSV', experienceHandler.createCSV)
-usersRouter.get('/:userName/experiences', experienceHandler.getAllExperiences)
 usersRouter.post('/:userName/experiences', experienceHandler.createExperience)
-
+usersRouter.get('/:userName/experiences', experienceHandler.getAllExperiences)
+usersRouter.put('/:userName/experiences/:expId/upload', multer({ storage: cloudinaryStorage}).single('image'), experienceHandler.postImage)
 
 usersRouter.route('/:userName/experiences/:expId')
 .get(experienceHandler.getExpByID)
 .put(experienceHandler.updateExperience)
 .delete(experienceHandler.deleteExperience)
-
 
 export default usersRouter
