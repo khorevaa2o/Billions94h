@@ -29,7 +29,7 @@ const postPicture = async (req, res, next) => {
     try {
         const id = req.params.id
         const imgPath = req.file.path
-        const user = await PostModel.findByIdAndUpdate(id, { $set: { image: imgPath }})
+        const user = await PostModel.findByIdAndUpdate(id, { $set: { image: imgPath } }, {new: true})
         res.status(203).send(user)
     } catch (error) {
         console.log(error)

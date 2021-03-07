@@ -5,7 +5,9 @@ import { AsyncParser } from "json2csv"
 export async function parseCSV(data, fields) {
     const opts = { fields };
     console.log("here opts: ", opts.fields)
-const asyncParser = new AsyncParser(opts.fields)
+const asyncParser = new AsyncParser()
+// this should go inside AsyncParser() as parameter, but its not working properly: {fields: opts.fields}
+
 
 let csv = '';
 asyncParser.processor
