@@ -132,7 +132,7 @@ const deletePost = async (req, res, next) => {
         const id = req.params.id
         const deletedPost = await PostModel.findByIdAndDelete(id)
         if (deletedPost){
-            res.status(204).send(deletedPost)
+            res.send('deleted')
         } else {
             next(createHttpError(404, `Post with id ${req.params.id} not found`))
         }
