@@ -43,7 +43,7 @@ const getAllComments = async (req, res, next) => {
         .limit(mongoQuery.options.limit)
         .skip(mongoQuery.options.skip)
         .sort(mongoQuery.options.sort)
-        .populate({ path: 'comments', select: 'text userName createdAt'})
+        .populate({ path: 'comments', select: 'text userName createdAt replies'})
         .populate({ path: 'user'})
         if(post){
             const comments = post.comments

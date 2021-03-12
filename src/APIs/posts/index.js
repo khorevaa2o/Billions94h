@@ -1,6 +1,7 @@
 import express from 'express';
 import postHandler from './p-handler.js'
 import commentsHandler from '../comments/c-handler.js';
+import repliesHandler from '../replies/r-handler.js';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import { v2 as cloudinary } from 'cloudinary'
 import multer from 'multer'
@@ -37,6 +38,14 @@ postRouter.route('/:id/comments/:commentId')
 .put(commentsHandler.updateComment)
 .get(commentsHandler.getCommentById)
 .delete(commentsHandler.deleteComment)
+
+/*********************************************Replies Crud Section ********************************/
+postRouter.get('/:id/replies', repliesHandler.getReplies)
+postRouter.post('/:id/:commentId/replies', repliesHandler.postReply)
+
+postRouter.route('/:id/replies/:replyId')
+.put(repliesHandler.updateReply)
+.delete(repliesHandler.deleteReply)
 
 
 

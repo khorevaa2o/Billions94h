@@ -2,17 +2,17 @@ import mongoose from 'mongoose';
 
 const { Schema, model } = mongoose
 
-const CommentSchema = new Schema(
+const ReplySchema = new Schema(
     {
-        text: { type: String, required: true },
+        text: {type: String, required: true},
         userName: { type: String },
         user: { type: Schema.Types.ObjectId, ref: 'User' },
         posts: [{ type: Schema.Types.ObjectId, ref: 'Post'}],
-        replies: [{ type: Schema.Types.ObjectId, ref: 'Reply'}]
+        comments: [{ type: Schema.Types.ObjectId, ref: 'Comment'}]
     },
     {
         timestamps: true
     }
 )
 
-export default model('Comment', CommentSchema)
+export default model('Reply', ReplySchema)
