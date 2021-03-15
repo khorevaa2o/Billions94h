@@ -13,7 +13,8 @@ const UserSchema = new Schema(
         job: { type: String, required: true },
         bio: { type: String, required: true },
         area: { type: String, required: true },
-        experiences: [ { type: Schema.Types.ObjectId, ref: 'Experience'}]
+        experiences: [ { type: Schema.Types.ObjectId, ref: 'Experience'}],
+        friends: [{type: Schema.Types.ObjectId, ref: 'User'}]
     },
     {
         timestamps: true
