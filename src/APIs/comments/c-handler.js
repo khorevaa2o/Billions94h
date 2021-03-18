@@ -8,6 +8,9 @@ import createHttpError from 'http-errors'
 const createComment = async (req, res, next) => {
     try {
         const id = req.params.id
+
+        const { name, userName, image } = req.query
+        console.log(name, userName, image)
         
         const comment = await CommentModel(req.body)
         comment.posts = id
@@ -43,7 +46,7 @@ const getAllComments = async (req, res, next) => {
         .limit(mongoQuery.options.limit)
         .skip(mongoQuery.options.skip)
         .sort(mongoQuery.options.sort)
-        .populate({ path: 'comments', select: 'text userName createdAt replies'})
+        .populate({ path: 'comments', select: 'text userName user image replies createdAt'})
         .populate({ path: 'user'})
         if(post){
             const comments = post.comments
