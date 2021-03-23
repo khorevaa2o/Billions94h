@@ -65,4 +65,8 @@ usersRouter.route('/:userName/experiences/:expId')
 .put(experienceHandler.updateExperience)
 .delete(experienceHandler.deleteExperience)
 
+/********************************************* Friends Crud Section  ******************************************/
+// usersRouter.post('/:id/friends', usersHandler.sendFriendReq)
+usersRouter.post('/:id/friends', usersHandler.acceptFriendReq)
+
 export default usersRouter
