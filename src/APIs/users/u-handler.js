@@ -1,6 +1,7 @@
 import UserModel from "./schema.js";
 import createHttpError from "http-errors";
-import q2m from 'query-to-mongo'
+import q2m from 'query-to-mongo';
+import mongoose from "mongoose"
 
 // Create new User
 const createUser = async (req, res, next) => {
@@ -101,14 +102,113 @@ const deleteUser = async (req, res, next) => {
     }
 }
 
+// Friend Request
+const acceptFriendReq = async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        console.log('==================>',id)
+        let sendRequest = await UserModel.findById(id);
+        if (sendRequest) {
+          const request = await UserModel.findOne({
+            _id: id,
+            friends: new mongoose.Types.ObjectId(req.body.friendId),
+          });
+
+          const friendId = req.body.friendId;
+          console.log('==================>',friendId)
+          let sendRequest2 = await UserModel.findById(friendId);
+          if (sendRequest2) {
+            const request2 = await UserModel.findOne({
+              _id: friendId,
+              friends: new mongoose.Types.ObjectId(req.params.id),
+            });
+          console.log('i am liked', request)
+    
+          if (!request) {
+            sendRequest =  await UserModel.findByIdAndUpdate(id, {
+              $push: { friends: req.body.friendId }
+            }, {new: true});
+          } else {
+            sendRequest  =  await UserModel.findByIdAndUpdate(id, {
+              $pull: { friends: req.body.friendId },
+            },{new:true});
+          }
+
+          if (!request2) {
+            sendRequest2 =  await UserModel.findByIdAndUpdate(friendId, {
+              $push: { friends: req.params.id }
+            }, {new: true});
+          } else {
+            sendRequest2  =  await UserModel.findByIdAndUpdate(friendId, {
+              $pull: { friends: req.params.id },
+            },{new:true});
+          }
+          res.status(201).send({sendRequest, sendRequest2});
+        } else {
+          next(createHttpError(404, `post with this id ${id} not found`));
+        }
+          
+     } 
+      } catch (error) {
+        next(error);
+      }
+}
+
 const usersHandler = {
     createUser,
     postPicture,
     getAllUsers,
     getUserById,
     updateUser,
-    deleteUser
+    deleteUser,
+    // sendFriendReq,
+    acceptFriendReq
 
 };
 
 export default usersHandler;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Friend Request
+// const sendFriendReq = async (req, res, next) => {
+//     try {
+//         const id = req.params.id;
+//         console.log('==================>',id)
+//         let sendRequest = await UserModel.findById(id);
+//         if (sendRequest) {
+//           const request = await UserModel.findOne({
+//             _id: id,
+//             friends: new mongoose.Types.ObjectId(req.body.friendId),
+//           });
+//           console.log('i am liked', request)
+    
+//           if (!request) {
+//             sendRequest =  await UserModel.findByIdAndUpdate(id, {
+//               $push: { friends: req.body.friendId }
+//             }, {new: true});
+//           } else {
+//             sendRequest  =  await UserModel.findByIdAndUpdate(id, {
+//               $pull: { friends: req.body.friendId },
+//             },{new:true});
+//           }
+//         } else {
+//           next(createHttpError(404, `post with this id ${id} not found`));
+//         }
+          
+//         res.status(201).send(sendRequest);
+//       } catch (error) {
+//         next(error);
+//       }
+// }
