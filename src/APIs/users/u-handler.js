@@ -40,6 +40,7 @@ const getAllUsers = async (req, res, next) => {
         .skip(mongoQuery.options.skip)
         .sort(mongoQuery.options.sort)
         .populate({ path: 'experiences'})
+        .populate({ path: 'friends', select: 'name surname email'})
 
         res.send({
             links: mongoQuery.links('/users', total),

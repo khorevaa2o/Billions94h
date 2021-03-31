@@ -80,6 +80,7 @@ const getAllPosts = async (req, res, next) => {
         .sort(mongoQuery.options.sort)
         .populate({ path: 'user'})
         .populate({ path: 'comments'})
+        .populate({ path: 'likes', select: 'name surname'})
 
         res.send({
             links: mongoQuery.links('/posts', total),
